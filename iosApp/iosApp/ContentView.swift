@@ -1,33 +1,45 @@
 import SwiftUI
-import Shared
+//import Shared
 
 struct ContentView: View {
-    @State private var showContent = false
+    @StateObject private var locationManager = LocationManager()
+    
     var body: some View {
-        VStack {
-            Button("Click me!") {
-                withAnimation {
-                    showContent = !showContent
-                }
-            }
-
-            if showContent {
-                VStack(spacing: 16) {
-                    Image(systemName: "swift")
-                        .font(.system(size: 200))
-                        .foregroundColor(.accentColor)
-                    Text("SwiftUI: \(Greeting().greet())")
-                }
-                .transition(.move(edge: .top).combined(with: .opacity))
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .padding()
+        
+        VStack{
+            
+        }.background(.blue.gradient)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
+
+struct previewer: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        VStack{
+            ContentView()
+        }
+    }
+}
+
+struct ContentView: View {
+    @StateObject private var locationManager = LocationManager()
+    
+    var body: some View {
+        VStack {
+            if let coordinate = locationManager.lastKnownLocation {
+                ActualWeather(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                
+                DailyWeather().offset(CGSize(width: 0.0, height: -100.0))
+                weeklyWeather().offset(CGSize(width: 0.0, height: -100.0)).padding(.bottom, -100)
+            } else {
+                Text("Unknown Location")
+            }
+        
+            Button("Authorize location") {
+                locationManager.checkLocationAuthorization()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
     }
 }
