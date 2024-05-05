@@ -119,7 +119,7 @@ fun weeklyWeather(weeklyWeatherViewModel: WeeklyWeatherViewModel) {
                         }
                         Box(
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(0.75f)
                                 .padding(8.dp)
                         ) {
                             Image(
@@ -146,7 +146,7 @@ fun weeklyWeather(weeklyWeatherViewModel: WeeklyWeatherViewModel) {
                         }
                         Box(
                             modifier = Modifier
-                                .weight(1.25f)
+                                .weight(1.4f)
                                 .padding(8.dp)
                         ) {
                             Text(

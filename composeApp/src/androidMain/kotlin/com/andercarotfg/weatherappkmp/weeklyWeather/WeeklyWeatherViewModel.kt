@@ -33,14 +33,14 @@ class WeeklyWeatherViewModel {
 
     private val weekDayList: List<String> = listOf("Lunes", "Martes", "Miercoles", "Jueves",
         "Viernes", "Sábado", "Domingo", "Lunes", "Martes", "Miercoles", "Jueves", "Viernes",
-        "Sábado")
+        "Sábado", "Domingo")
 
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun getAllData(latitude: Double, longitude: Double) {
         val weekW = weatherBL.getAllData(latitude, longitude)
         val dayW = weatherBL.getDailyWeather(weekW)
         val currentHour = LocalDateTime.now()
-        val actualDayOfWeek = DayOfWeek.from(currentHour).value
+        val actualDayOfWeek = DayOfWeek.from(currentHour).value - 1
         var lista = emptyList<Pair<Triple<String, String, String>, Int>>().toMutableList()
         println("Dia de la semana: $actualDayOfWeek")
         for (i in 1..7) {
