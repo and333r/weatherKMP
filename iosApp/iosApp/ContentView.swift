@@ -4,19 +4,20 @@ import SwiftUI
 
 struct ContentView: View {
     @StateObject private var locationManager = LocationManager()
+    private var actualWVM = actualWeatherViewModel()
+    private var dailyWVM = dailyWeatherViewModel()
 
     var body: some View {
         VStack {
-            if let coordinate = locationManager.lastKnownLocation {
-                ActualWeather(latitude: coordinate.latitude, longitude: coordinate.longitude)
-                DailyWeather().offset(CGSize(width: 0.0, height: -70.0))
-                weeklyWeather().offset(CGSize(width: 0.0, height: -70.0)).padding(.bottom, -100)
-            } else {
-                Text("Unknown Location")
-            }
-
+            ActualWeather(ActualWeatherViewModel: actualWVM)
+            DailyWeather(DailyWeatherViewModel: dailyWVM).offset(CGSize(width: 0.0, height: -70.0))
+            weeklyWeather().offset(CGSize(width: 0.0, height: -70.0)).padding(.bottom, -100)
         }.onAppear{
             locationManager.checkLocationAuthorization()
+            let coordinate = locationManager.lastKnownLocation
+            actualWVM.setLatAndLong(Latitude: coordinate!.latitude, Longitude: coordinate!.longitude)
+            dailyWVM.setLatAndLong(Latitude: coordinate!.latitude, Longitude: coordinate!.longitude)
+
         }
         .padding()
         .background(.blue.gradient)

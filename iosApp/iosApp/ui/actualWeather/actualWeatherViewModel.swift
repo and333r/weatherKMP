@@ -11,23 +11,24 @@ import Shared
 import SwiftUI
 
 class actualWeatherViewModel: ObservableObject{
-    @Published var actualT = ""
-    @Published var actualC = ""
-    @Published var actualH = ""
-    @Published var actualRT = ""
-    @Published var actualP = ""
-    @Published var estado = ""
+    @Published var actualT = "14"
+    @Published var actualC = "2"
+    @Published var actualH = "65"
+    @Published var actualRT = "12"
+    @Published var actualP = "0"
+    @Published var estado = "Soleado"
     @Published var gradientColorList = Color.blue.gradient
     
-    @Published var latitude = ""
-    @Published var longitude = ""
+    @Published var latitude = 0.0
+    @Published var longitude = 0.0
     
     private var WeatherBL: weatherBL = weatherBL()
 
     
-    func getAllData(latitude: Double, longitude: Double) async {
+    func getAllData() async {
         print(latitude)
         print(longitude)
+        print("Estoy en getAllData en iOS")
         do{
             let weekW = try await WeatherBL.getAllData(latitude: latitude, longitude: longitude)
             let dayW = WeatherBL.getDailyWeather(weekWeather: weekW)
@@ -65,5 +66,10 @@ class actualWeatherViewModel: ObservableObject{
             }
         
         }
+    
+    func setLatAndLong(Latitude: Double, Longitude: Double){
+           latitude = Latitude
+           longitude = Longitude
+       }
 
 }
