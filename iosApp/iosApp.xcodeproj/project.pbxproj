@@ -11,6 +11,8 @@
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		3C0FB8BE2BE7E69D005C7A7B /* actualWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C0FB8BD2BE7E69D005C7A7B /* actualWeather.swift */; };
+		3C8EB1ED2BE8FFB7003F1A42 /* dailyWeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8EB1EC2BE8FFB7003F1A42 /* dailyWeatherViewModel.swift */; };
+		3C8EB1EF2BE8FFCA003F1A42 /* weeklyWeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C8EB1EE2BE8FFCA003F1A42 /* weeklyWeatherViewModel.swift */; };
 		3C914F772BE8050D00A7E165 /* dailyWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C914F762BE8050D00A7E165 /* dailyWeather.swift */; };
 		3C914F792BE8122700A7E165 /* cardConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C914F782BE8122700A7E165 /* cardConstructor.swift */; };
 		3C914F7B2BE8141500A7E165 /* weeklyWeather.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C914F7A2BE8141500A7E165 /* weeklyWeather.swift */; };
@@ -25,6 +27,8 @@
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		3C0FB8BD2BE7E69D005C7A7B /* actualWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = actualWeather.swift; sourceTree = "<group>"; };
+		3C8EB1EC2BE8FFB7003F1A42 /* dailyWeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dailyWeatherViewModel.swift; sourceTree = "<group>"; };
+		3C8EB1EE2BE8FFCA003F1A42 /* weeklyWeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weeklyWeatherViewModel.swift; sourceTree = "<group>"; };
 		3C914F762BE8050D00A7E165 /* dailyWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = dailyWeather.swift; sourceTree = "<group>"; };
 		3C914F782BE8122700A7E165 /* cardConstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = cardConstructor.swift; sourceTree = "<group>"; };
 		3C914F7A2BE8141500A7E165 /* weeklyWeather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weeklyWeather.swift; sourceTree = "<group>"; };
@@ -80,6 +84,7 @@
 			children = (
 				3C914F762BE8050D00A7E165 /* dailyWeather.swift */,
 				3C914F782BE8122700A7E165 /* cardConstructor.swift */,
+				3C8EB1EC2BE8FFB7003F1A42 /* dailyWeatherViewModel.swift */,
 			);
 			path = dailyWeather;
 			sourceTree = "<group>";
@@ -89,6 +94,7 @@
 			children = (
 				3C914F7A2BE8141500A7E165 /* weeklyWeather.swift */,
 				3C914F7C2BE8142500A7E165 /* weeklyCardConstructor.swift */,
+				3C8EB1EE2BE8FFCA003F1A42 /* weeklyWeatherViewModel.swift */,
 			);
 			path = weeklyWeather;
 			sourceTree = "<group>";
@@ -245,6 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3C914F772BE8050D00A7E165 /* dailyWeather.swift in Sources */,
+				3C8EB1ED2BE8FFB7003F1A42 /* dailyWeatherViewModel.swift in Sources */,
 				3C914F7D2BE8142500A7E165 /* weeklyCardConstructor.swift in Sources */,
 				3C0FB8BE2BE7E69D005C7A7B /* actualWeather.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
@@ -252,6 +259,7 @@
 				3C914F7F2BE824DA00A7E165 /* actualWeatherViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				3C914F7B2BE8141500A7E165 /* weeklyWeather.swift in Sources */,
+				3C8EB1EF2BE8FFCA003F1A42 /* weeklyWeatherViewModel.swift in Sources */,
 				3C914F822BE8296700A7E165 /* LocationManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

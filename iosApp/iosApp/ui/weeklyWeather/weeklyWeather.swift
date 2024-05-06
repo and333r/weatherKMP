@@ -17,9 +17,9 @@ struct weeklyWeather: View {
                     ForEach(0..<7) {_ in
                         weeklycardConstructor(code: 1, max: 18, min: 12, weekDay: "Monday")
                     }
-                }.frame(height: .infinity)
-            }.frame(height: .infinity)
-        }.frame(height: .infinity)
+                }
+            }
+        }
         
     }
 }

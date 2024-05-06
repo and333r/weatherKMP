@@ -11,13 +11,17 @@ import SwiftUI
 
 @available(iOS 16.0, *)
 struct DailyWeather: View {
+    @ObservedObject var DailyWeatherViewModel: dailyWeatherViewModel
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(0..<23) {_ in 
-                    cardConstructor(code: 1, temperature: 12, hour: "16")
+                ForEach(0...DailyWeatherViewModel.temperatures.count-1, id: \.self) {i in
+                    cardConstructor(code: DailyWeatherViewModel.codes[i], temperature: Int(DailyWeatherViewModel.temperatures[i]), hour: DailyWeatherViewModel.hours[i])
                 }
             }
+        }.task{
+            await DailyWeatherViewModel.getAllData()
         }
         
     }
@@ -28,7 +32,7 @@ struct DailyWeather: View {
 struct dailyWeather_previewer: PreviewProvider {
     static var previews: some View {
         VStack{
-            DailyWeather()
+            DailyWeather(DailyWeatherViewModel: dailyWeatherViewModel.init())
         }
     }
 }
