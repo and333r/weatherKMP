@@ -22,43 +22,47 @@ class actualWeatherViewModel: ObservableObject{
     @Published var latitude = ""
     @Published var longitude = ""
     
-    private var weatherBL: weatherBL
+    private var WeatherBL: weatherBL = weatherBL()
+
     
-    init(weatherBL: weatherBL) {
-        self.weatherBL = weatherBL
-      }
-    
-    func getAllData(latitude: Double, longitude: Double) {
-        var weekW = weatherBL.getAllData(latitude, longitude)
-        var dayW = weatherBL.getDailyWeather(weekW)
-                
-        // Obtener la fecha actual
-        let ahora = Date()
-        // Crear un objeto de calendario
-        let calendario = Calendar.current
-        // Obtener las horas de la fecha actual
-        let currentHour = calendario.component(.hour, from: ahora)
-        
-        var actualWeather = weatherBL.getActualTemperature(dayW, currentHour+1)
-        
-        var dayseven = weatherBL.getSpecificWeekDayTemperature(weekW, 6)
-        var aux = actualWeather.temperature.roundToInt().toString()
-        actualT = aux + "º"
-        actualC = actualWeather.code.toString()
-        aux = actualWeather.humidity.toString()
-        actualH = "Humedad: $aux%"
-        aux = actualWeather.relativeT.roundToInt().toString()
-        actualRT = "Sensación térmica: $aux" + "º"
-        aux = actualWeather.precipitation.toString()
-        actualP = "Precipitaciones: $aux%"
-        estado = weatherBL.returnEstado(Int(actualC))
-        
-        print(actualT)
-        print(actualC)
-        print(actualH)
-        print(actualRT)
-        print(actualP)
-        print(estado)        
+    func getAllData(latitude: Double, longitude: Double) async {
+        print(latitude)
+        print(longitude)
+        do{
+            let weekW = try await WeatherBL.getAllData(latitude: latitude, longitude: longitude)
+            let dayW = WeatherBL.getDailyWeather(weekWeather: weekW)
+            // Obtener la fecha actual
+            let ahora = Date()
+            // Crear un objeto de calendario
+            let calendario = Calendar.current
+            // Obtener las horas de la fecha actual
+            let currentHour = calendario.component(.hour, from: ahora)
+            
+            let actualWeather = WeatherBL.getActualTemperature(dayWeather: dayW, hour: Int32(currentHour+1))
+            
+            var dayseven = WeatherBL.getSpecificWeekDayTemperature(weekWeather: weekW, dayNumber: 6)
+            var aux = String(round(actualWeather.temperature))
+            actualT = aux + "º"
+            actualC = String(actualWeather.code)
+            aux = String(actualWeather.humidity)
+            actualH = "Humedad: \(aux)%"
+            aux = String(round(actualWeather.relativeT))
+            actualRT = "Sensación térmica: \(aux)" + "º"
+            aux = String(actualWeather.precipitation)
+            actualP = "Precipitaciones: \(aux)%"
+            estado = WeatherBL.returnEstado(code: Int32(actualC)!)
+            
+            print(actualT)
+            print(actualC)
+            print(actualH)
+            print(actualRT)
+            print(actualP)
+            print(estado)
+            
+        }
+        catch {
+                print(error)
+            }
         
         }
 

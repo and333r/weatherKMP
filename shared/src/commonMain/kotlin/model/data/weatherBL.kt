@@ -9,7 +9,6 @@ import model.domain.dayWeather
 
 
 class weatherBL {
-    companion object {
         suspend fun getAllData(latitude: Double, longitude: Double): weekWeather {
             val URL = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code&timezone=Europe%2FBerlin"
             println("Retrieving data...")
@@ -78,5 +77,3 @@ class weatherBL {
 
 
     }
-
-}

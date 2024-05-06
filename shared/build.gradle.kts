@@ -35,6 +35,10 @@ kotlin {
             implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.10")
 
         }
+        iosMain.dependencies {
+            implementation("io.ktor:ktor-client-darwin:2.3.10")
+
+        }
     }
 }
 
