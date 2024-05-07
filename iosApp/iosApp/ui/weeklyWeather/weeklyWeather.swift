@@ -9,21 +9,24 @@
 import SwiftUI
 
 struct weeklyWeather: View {
+    @ObservedObject var WeeklyWeatherViewModel: weeklyWeatherViewModel
     var body: some View {
         VStack(alignment: .leading){
             Text("Predicción (7 días):")
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(0..<7) {_ in
-                        weeklycardConstructor(code: 1, max: 18, min: 12, weekDay: "Monday")
+                    ForEach(0..<WeeklyWeatherViewModel.maxMin.count) {i in
+                        weeklycardConstructor(code: WeeklyWeatherViewModel.maxMin[i].1, max: WeeklyWeatherViewModel.maxMin[i].0.1, min: WeeklyWeatherViewModel.maxMin[i].0.2, weekDay: WeeklyWeatherViewModel.maxMin[i].0.0!)
                     }
                 }
             }
+        }.task{
+            await WeeklyWeatherViewModel.getAllData()
         }
         
     }
 }
 
 #Preview {
-    weeklyWeather()
+    weeklyWeather(WeeklyWeatherViewModel: weeklyWeatherViewModel.init())
 }

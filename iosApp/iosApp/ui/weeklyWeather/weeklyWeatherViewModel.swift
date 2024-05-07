@@ -10,19 +10,19 @@ import Shared
 import SwiftUI
 
 class weeklyWeatherViewModel: ObservableObject{
-    @Published var actualT = "14"
-    @Published var actualC = "2"
-    @Published var actualH = "65"
-    @Published var actualRT = "12"
-    @Published var actualP = "0"
-    @Published var estado = "Soleado"
-    @Published var gradientColorList = Color.blue.gradient
+    @Published var maxMin: [((String?, String, String), Int)] = [
+        (("Sábado", "14", "9.3"), 0),
+        (("Domingo", "14", "9.3"), 0),
+        (("Lunes", "14", "9.3"), 0),
+        (("Martes", "14", "9.3"), 0),
+        (("Miercoles", "14", "9.3"), 0),
+        (("Jueves", "14", "9.3"), 0),
+        (("Viernes", "14", "9.3"), 0)]
     
-    @Published var latitude = 0.0
-    @Published var longitude = 0.0
+    @Published var latitude: Double = 0.0
+    @Published var longitude:Double = 0.0
     
     private var WeatherBL: weatherBL = weatherBL()
-
     
     func getAllData() async {
         print(latitude)
@@ -30,34 +30,18 @@ class weeklyWeatherViewModel: ObservableObject{
         print("Estoy en getAllData en iOS")
         do{
             let weekW = try await WeatherBL.getAllData(latitude: latitude, longitude: longitude)
-            let dayW = WeatherBL.getDailyWeather(weekWeather: weekW)
-            // Obtener la fecha actual
-            let ahora = Date()
-            // Crear un objeto de calendario
-            let calendario = Calendar.current
-            // Obtener las horas de la fecha actual
-            let currentHour = calendario.component(.hour, from: ahora)
             
-            let actualWeather = WeatherBL.getActualTemperature(dayWeather: dayW, hour: Int32(currentHour+1))
-            
-            var dayseven = WeatherBL.getSpecificWeekDayTemperature(weekWeather: weekW, dayNumber: 6)
-            var aux = String(round(actualWeather.temperature))
-            actualT = aux + "º"
-            actualC = String(actualWeather.code)
-            aux = String(actualWeather.humidity)
-            actualH = "Humedad: \(aux)%"
-            aux = String(round(actualWeather.relativeT))
-            actualRT = "Sensación térmica: \(aux)" + "º"
-            aux = String(actualWeather.precipitation)
-            actualP = "Precipitaciones: \(aux)%"
-            estado = WeatherBL.returnEstado(code: Int32(actualC)!)
-            
-            print(actualT)
-            print(actualC)
-            print(actualH)
-            print(actualRT)
-            print(actualP)
-            print(estado)
+            var lista: [((String?,String, String), Int)] = []
+                
+            for i in 1...7{
+                var currentDay = WeatherBL.getSpecificWeekDayTemperature(weekWeather: weekW, dayNumber: Int32(i))
+                var currentMaxMin = getMaxAndMinT(dayWeather: currentDay)
+                var mostRepeatedCode = getAverageCode(dayWeather: currentDay)
+                var weekDaySpanish = getDayOfWeek(afterDays: i-1)?.capitalized
+                lista.append(((weekDaySpanish, currentMaxMin.0, currentMaxMin.1), mostRepeatedCode))
+            }
+            print(lista)
+            maxMin = lista
             
         }
         catch {
@@ -70,6 +54,40 @@ class weeklyWeatherViewModel: ObservableObject{
            latitude = Latitude
            longitude = Longitude
        }
+    
+    func getDayOfWeek(afterDays days: Int) -> String? {
+        let calendar = Calendar(identifier: .gregorian)
+        let currentDate = Date()
+        
+        if let futureDate = calendar.date(byAdding: .day, value: days, to: currentDate) {
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "es_ES")
+            dateFormatter.dateFormat = "EEEE"
+            return dateFormatter.string(from: futureDate)
+        } else {
+            return nil
+        }
+    }
+    
+    func getMaxAndMinT(dayWeather: dayWeather) -> (String, String) {
+        var max = -1.0
+        var min = 1000.0
+            for t in dayWeather.temperatures {
+                if (Double(truncating: t) > max) {
+                    max = Double(truncating: t)
+                } else if (Double(truncating: t)<min){
+                    min = Double(truncating: t)
+                }
+            }
+            return (String(max), String(min))
+    }
+
+    func getAverageCode(dayWeather: dayWeather) -> Int {
+        
+        let countedSet = NSCountedSet(array: dayWeather.codes)
+        let mostFrequent = countedSet.max { countedSet.count(for: $0) < countedSet.count(for: $1) }
+        return mostFrequent as! Int
+    }
 
 }
 

@@ -10,11 +10,11 @@ import SwiftUI
 
 struct weeklycardConstructor: View {
     var code: Int
-    var max: Int
-    var min: Int
+    var max: String
+    var min: String
     var weekDay: String
     var body: some View {
-        HStack(alignment: .center, spacing: 30){
+        HStack(alignment: .center, spacing: 25){
                 Text(weekDay)
                 .font(.title3)
                 .fontWeight(.bold)
@@ -24,10 +24,10 @@ struct weeklycardConstructor: View {
                     .scaledToFit()
                     .frame(width: 40, height: 40)
             HStack{
-                Text("max.:" + String(max) + "º")
-                    .font(.body)
-                Text("min.:" + String(min) + "º")
-                    .font(.body)
+                Text("max.:" + max + "º")
+                    .font(.footnote)
+                Text("min.:" + min + "º")
+                    .font(.footnote)
             }
             .padding(.trailing)
                 
@@ -37,5 +37,5 @@ struct weeklycardConstructor: View {
 }
 
 #Preview {
-    weeklycardConstructor(code: 1, max: 18, min: 12, weekDay: "Monday")
+    weeklycardConstructor(code: 1, max: "18", min: "12", weekDay: "Monday")
 }
