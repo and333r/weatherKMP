@@ -1,65 +1,120 @@
-package com.andercarotfg.weatherappkmp.actualWeather
+package ui.actualWeather
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import app.cash.sqldelight.db.AfterVersion
+import com.db.WeatherAppDatabaseKMP
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import model.data.weatherBL
-import java.time.LocalTime
+import model.db.DatabaseDriverFactory
+import model.db.createDatabase
+import model.db.actualWeather.actualWeatherDataSource
+import model.db.actualWeather.actualWeatherRepository
+import model.db.actualWeather.actualWeatherRepositorySQL
 import kotlin.math.roundToInt
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+
 
 class ActualWeatherViewModel : ViewModel(){
+    val color_init = listOf(
+        Color(0xFF000000),
+        Color(0xFF212121),
+        Color(0xFF424242),
+        Color(0xFF616161),
+        Color(0xFF9E9E9E)
+    )
 
-    private val _actualT = MutableLiveData<String>()
-    val actualT : LiveData<String> = _actualT
+    private val _actualT = MutableStateFlow<String>("0")
+    val actualT : StateFlow<String> = _actualT
 
-    private val _actualC = MutableLiveData<String>()
-    val actualC : LiveData<String> = _actualC
+    private val _actualC = MutableStateFlow<String>("0")
+    val actualC : StateFlow<String> = _actualC
 
-    private val _actualH = MutableLiveData<String>()
-    val actualH : LiveData<String> = _actualH
+    private val _actualH = MutableStateFlow<String>("Humedad: -%")
+    val actualH : StateFlow<String> = _actualH
 
-    private val _actualRT = MutableLiveData<String>()
-    val actualRT : LiveData<String> = _actualRT
+    private val _actualRT = MutableStateFlow<String>("Sensación térmica: -ºC")
+    val actualRT : StateFlow<String> = _actualRT
 
-    private val _actualP = MutableLiveData<String>()
-    val actualP : LiveData<String> = _actualP
+    private val _actualP = MutableStateFlow<String>("Precipitaciones: -%")
+    val actualP : StateFlow<String> = _actualP
 
-    private val _estado = MutableLiveData<String>()
-    val estado : LiveData<String> = _estado
+    private val _estado = MutableStateFlow<String>("-")
+    val estado : StateFlow<String> = _estado
 
-    private val _gradientColorList = MutableLiveData<List<Color>>()
-    val gradientColorList : LiveData<List<Color>> = _gradientColorList
+    private val _gradientColorList = MutableStateFlow<List<Color>>(color_init)
+    val gradientColorList : StateFlow<List<Color>> = _gradientColorList
 
-    private val _latitude = MutableLiveData<String>()
-    val latitude : LiveData<String> = _latitude
+    private val _latitude = MutableStateFlow<String>("43.5667")
+    val latitude : StateFlow<String> = _latitude
 
-    private val _longitude = MutableLiveData<String>()
-    val longitude : LiveData<String> = _longitude
+    private val _longitude = MutableStateFlow<String>("-5.9")
+    val longitude : StateFlow<String> = _longitude
 
-    @RequiresApi(Build.VERSION_CODES.O)
+    val db = createDatabase(DatabaseDriverFactory())
+    val ds_aw = actualWeatherDataSource(db)
+    val repo_aw = actualWeatherRepositorySQL(dataSource =  ds_aw)
+
     suspend fun getAllData(latitude: Double, longitude: Double) {
-        val weekW = weatherBL.getAllData(latitude, longitude)
-        val dayW = weatherBL.getDailyWeather(weekW)
-        val currentHour = LocalTime.now().hour
-        val actualWeather = weatherBL.getActualTemperature(dayW, currentHour+1)
-        val dayseven = weatherBL.getSpecificWeekDayTemperature(weekW, 6)
-        var aux = actualWeather.temperature.roundToInt().toString()
+        val weekW = weatherBL.getAllData(_latitude.value.toDouble(), _longitude.value.toDouble())
+        val currentHour = Clock.System.now()
+        val currentTime = currentHour.toLocalDateTime(TimeZone.UTC).hour
+        val res = repo_aw.getAll()
 
-        _actualT.value = aux + "º"
-        _actualC.value = actualWeather.code.toString()
-        aux = actualWeather.humidity.toString()
-        _actualH.value = "Humedad: $aux%"
-        aux = actualWeather.relativeT.roundToInt().toString()
-        _actualRT.value = "Sensación térmica: $aux" + "º"
-        aux = actualWeather.precipitation.toString()
-        _actualP.value = "Precipitaciones: $aux%"
-        _estado.value = weatherBL.returnEstado(_actualC.value!!.toInt())
+        res.collect{
+            val lastWeather = res.first()
+            lastWeather.onSuccess {
+                val values = it.firstOrNull()
+                var cambio = false
+                if(it.isNotEmpty()){
+                    if(latitude == values?.latitude || longitude==values?.longitude){
+                        val ultimaHora = values.hour
+                        if(ultimaHora != (currentTime+2)){
+                            cambio = true
+                        }
+                    }else{
+                        cambio = true
+                    }
+                    _gradientColorList.value = returnGradient(values!!.code)
+                    _actualT.value = values.temperature.roundToInt().toString() + "º"
+                    _actualC.value = values.code.toString()
+                    var aux = values.humidity.toString()
+                    _actualH.value = "Humedad: $aux%"
+                    aux = values.relativeT.roundToInt().toString()
+                    _actualRT.value = "Sensación térmica: $aux" + "º"
+                    aux = values.precipitation.toString()
+                    _actualP.value = "Precipitaciones: $aux%"
+                    _estado.value = weatherBL.returnEstado(_actualC.value.toInt())
+                }else{
+                    cambio = true
+                }
+                if(cambio) {
+                    val dayW = weatherBL.getDailyWeather(weekW)
+                    val actualWeather = weatherBL.getActualTemperature(dayW, currentTime + 1)
+                    val dayseven = weatherBL.getSpecificWeekDayTemperature(weekW, 6)
+                    var aux = actualWeather.temperature.roundToInt().toString()
+                    repo_aw.deleteAll()
+                    repo_aw.insert(
+                        currentTime.toLong() + 2, latitude, longitude,
+                        actualWeather.temperature,
+                        actualWeather.humidity.toLong(),
+                        actualWeather.code.toLong(),
+                        actualWeather.relativeT,
+                        actualWeather.precipitation.toLong()
+                    )
+                }
+
+
+            }.onFailure {
+            }
+        }
     }
-
-    fun returnGradient(code: Int) {
+    fun returnGradient(code: Int): List<Color> {
         val indexSunny = listOf(0, 51, 53, 55, 56, 57)
         val gradientColorListSunny = listOf(
             Color(0xFFFFF176),
@@ -117,26 +172,31 @@ class ActualWeatherViewModel : ViewModel(){
             Color(0xFF607D8B),
             Color(0xFF455A64)
         )
-        if (indexSunny.contains(code)) {
-            _gradientColorList.value = gradientColorListSunny
+        return if (indexSunny.contains(code)) {
+            gradientColorListSunny
         } else if (indexRain.contains(code)) {
-            _gradientColorList.value = gradientColorListRain
+            gradientColorListRain
         } else if (indexStorm.contains(code)) {
-            _gradientColorList.value = gradientColorListStorm
+            gradientColorListStorm
         } else if (indexSnow.contains(code)) {
-            _gradientColorList.value = gradientColorListSnow
+            gradientColorListSnow
         } else if (indexCloudyWithSun.contains(code)) {
-            _gradientColorList.value = gradientColorListCloudyWithSun
+            gradientColorListCloudyWithSun
         } else if (indexCloudy.contains(code)) {
-            _gradientColorList.value = gradientColorListCloudy
+            gradientColorListCloudy
         } else {
-            _gradientColorList.value = gradientColorListNight
+            gradientColorListNight
         }
     }
 
     fun setLatAndLong(latitude: Double, longitude: Double){
+        println("He pasado por setLatAndLong")
+        println(latitude)
+        println(longitude)
+
         _latitude.value = latitude.toString()
         _longitude.value = longitude.toString()
+
     }
 
 

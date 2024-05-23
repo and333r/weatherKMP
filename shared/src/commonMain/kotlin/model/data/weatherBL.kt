@@ -6,9 +6,12 @@ import model.domain.weekWeather
 import kotlinx.serialization.json.Json
 import model.domain.actualWeather
 import model.domain.dayWeather
+import kotlin.math.roundToInt
 
 
 class weatherBL {
+
+    companion object{
         suspend fun getAllData(latitude: Double, longitude: Double): weekWeather {
             val URL = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code&timezone=Europe%2FBerlin"
             println("Retrieving data...")
@@ -30,7 +33,9 @@ class weatherBL {
 
         fun getActualTemperature(dayWeather: dayWeather, hour: Int): actualWeather{
             println("Retrieving actual data...")
-            return actualWeather(dayWeather.latitude, dayWeather.longitude,
+            return actualWeather(
+                14,
+                dayWeather.latitude, dayWeather.longitude,
                 dayWeather.temperatures[hour],
                 dayWeather.humidities[hour],
                 dayWeather.codes[hour],
@@ -48,6 +53,25 @@ class weatherBL {
                 weekWeather.hourly.apparent_temperature.subList((24*(dayNumber-1)), 24*dayNumber),
                 weekWeather.hourly.precipitation_probability.subList((24*(dayNumber-1)), 24*dayNumber)
             )
+        }
+        fun getMaxAndMinT(dayWeather: dayWeather): Pair<String, String> {
+            var max = -1
+            var min = 1000
+            for (t in dayWeather.temperatures) {
+                if (t > max) {
+                    max = t.roundToInt()
+                } else if (t<min){
+                    min = t.roundToInt()
+                }
+            }
+            return Pair(max.toString(), min.toString())
+        }
+
+        fun getAverageCode(dayWeather: dayWeather): Int {
+            val conteo = dayWeather.codes.groupingBy { it }.eachCount()
+            val numeroMasRepetido = conteo.maxByOrNull { it.value }?.key
+            print("Numero mas repetido: $numeroMasRepetido")
+            return numeroMasRepetido?.toInt() ?: 0
         }
 
         fun returnEstado(code: Int): String {
@@ -76,4 +100,4 @@ class weatherBL {
         }
 
 
-    }
+    }}

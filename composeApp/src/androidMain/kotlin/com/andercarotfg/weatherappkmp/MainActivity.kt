@@ -19,12 +19,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.app.ActivityCompat
-import com.andercarotfg.weatherappkmp.actualWeather.ActualWeatherViewModel
 import com.andercarotfg.weatherappkmp.actualWeather.actualWeather
-import com.andercarotfg.weatherappkmp.dailyWeather.DailyWeatherViewModel
 import com.andercarotfg.weatherappkmp.dailyWeather.dailyWeather
 import com.andercarotfg.weatherappkmp.homepage.My_App
-import com.andercarotfg.weatherappkmp.weeklyWeather.WeeklyWeatherViewModel
 import com.andercarotfg.weatherappkmp.weeklyWeather.weeklyWeather
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -33,6 +30,9 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import ui.actualWeather.ActualWeatherViewModel
+import ui.dailyWeather.DailyWeatherViewModel
+import ui.weeklyWeather.WeeklyWeatherViewModel
 
 
 class MainActivity : ComponentActivity() {

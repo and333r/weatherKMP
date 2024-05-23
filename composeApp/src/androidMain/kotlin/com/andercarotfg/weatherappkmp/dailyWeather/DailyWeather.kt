@@ -18,6 +18,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.andercarotfg.weatherappkmp.R
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import ui.dailyWeather.DailyWeatherViewModel
 import kotlin.math.roundToInt
 
 
@@ -53,8 +55,8 @@ fun dailyWeather (dailyWeatherViewModel: DailyWeatherViewModel){
         val initListI = listOf(1, 2, 3)
         val initListS = listOf("1", "2", "3")
 
-        val latitude : String by dailyWeatherViewModel.latitude.observeAsState(initial = "43.5667")
-        val longitude : String by dailyWeatherViewModel.longitude.observeAsState(initial = "-5.9")
+        val latitude : String by dailyWeatherViewModel.latitude.collectAsState(initial = "43.5667")
+        val longitude : String by dailyWeatherViewModel.longitude.collectAsState(initial = "-5.9")
         LaunchedEffect(latitude) {
             println("Hola")
             dailyWeatherViewModel.getAllData(latitude.toDouble(), longitude.toDouble())
@@ -62,9 +64,9 @@ fun dailyWeather (dailyWeatherViewModel: DailyWeatherViewModel){
             println(longitude)
         }
 
-        val temperatures : List<Double> by dailyWeatherViewModel.temperatures.observeAsState(initial = initListD)
-        val codes : List<Int> by dailyWeatherViewModel.codes.observeAsState(initial = initListI)
-        val hours : List<String> by dailyWeatherViewModel.hours.observeAsState(initial = initListS)
+        val temperatures : List<Double> by dailyWeatherViewModel.temperatures.collectAsState(initial = initListD)
+        val codes : List<Int> by dailyWeatherViewModel.codes.collectAsState(initial = initListI)
+        val hours : List<String> by dailyWeatherViewModel.hours.collectAsState(initial = initListS)
 
         Spacer(modifier = Modifier.height(6.dp))
         Row (modifier = Modifier.fillMaxWidth()) {

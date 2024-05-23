@@ -17,8 +17,8 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.andercarotfg.weatherappkmp.actualWeather.ActualWeatherViewModel
 import com.andercarotfg.weatherappkmp.actualWeather.actualWeather
+import ui.actualWeather.ActualWeatherViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable

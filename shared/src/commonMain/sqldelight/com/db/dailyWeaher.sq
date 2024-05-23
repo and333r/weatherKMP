@@ -1,0 +1,31 @@
+CREATE TABLE IF NOT EXISTS dailyWeather (
+    id INTEGER NOT NULL PRIMARY KEY,
+    date TEXT NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    temperature REAL NOT NULL,
+    code INTEGER NOT NULL
+);
+-- Insert de datos de prueba para actualWeather
+
+test:
+INSERT OR REPLACE INTO dailyWeather(id, date, latitude, longitude, temperature, code)
+VALUES(1, 'test', 34.0522, 118.2437, 25.3, 800),
+      (2,'test',  40.7128, -74.0060, 22.1, 801),
+      (3, 'test', 51.5074, -0.1278, 18.5, 80),
+      (4, 'test', 35.6895, 139.6917, 28.9, 75),
+      (5,  'test', -33.8688, 151.2093, 20.0, 60),
+      (6,  'test', 48.8566, 2.3522, 17.2, 82),
+      (7, 'test',  55.7558, 37.6176, 15.3, 85);
+
+
+getAll:
+SELECT * FROM dailyWeather;
+
+deleteAll:
+DELETE FROM dailyWeather;
+
+insert:
+INSERT OR REPLACE INTO dailyWeather(id, date, latitude, longitude, temperature, code)
+VALUES(?, ?,?, ?, ?, ?);
+

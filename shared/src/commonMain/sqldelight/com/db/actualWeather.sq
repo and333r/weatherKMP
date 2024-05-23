@@ -1,0 +1,23 @@
+CREATE TABLE IF NOT EXISTS ActualWeather (
+    id INTEGER NOT NULL PRIMARY KEY,
+    hour INTEGER NOT NULL,
+    latitude REAL NOT NULL,
+    longitude REAL NOT NULL,
+    temperature REAL NOT NULL,
+    humidity INTEGER NOT NULL,
+    code INTEGER NOT NULL,
+    relativeT REAL NOT NULL,
+    precipitation INTEGER NOT NULL
+);
+
+getAll:
+SELECT * FROM ActualWeather;
+
+
+insert:
+INSERT OR REPLACE INTO ActualWeather(id, hour, latitude, longitude, temperature, humidity, code, relativeT, precipitation)
+VALUES(?,?, ?,?, ?, ?, ?, ?,?);
+
+deleteAll:
+DELETE FROM ActualWeather;
+

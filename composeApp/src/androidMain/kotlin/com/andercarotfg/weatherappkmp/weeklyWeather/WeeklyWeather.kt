@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -45,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.andercarotfg.weatherappkmp.R
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import ui.weeklyWeather.WeeklyWeatherViewModel
 import kotlin.math.roundToInt
 
 
@@ -66,8 +68,8 @@ fun weeklyWeather(weeklyWeatherViewModel: WeeklyWeatherViewModel) {
             Pair(Triple("Lunes", "14", "9.3"), 0)
         )
 
-        val latitude: String by weeklyWeatherViewModel.latitude.observeAsState(initial = "43.5667")
-        val longitude: String by weeklyWeatherViewModel.longitude.observeAsState(initial = "-5.9")
+        val latitude: String by weeklyWeatherViewModel.latitude.collectAsState(initial = "43.5667")
+        val longitude: String by weeklyWeatherViewModel.longitude.collectAsState(initial = "-5.9")
         LaunchedEffect(latitude) {
             println("Hola")
             weeklyWeatherViewModel.getAllData(latitude.toDouble(), longitude.toDouble())
@@ -75,7 +77,7 @@ fun weeklyWeather(weeklyWeatherViewModel: WeeklyWeatherViewModel) {
             println(longitude)
         }
 
-        val maxMin: List<Pair<Triple<String, String, String>, Int>> by weeklyWeatherViewModel.maxMin.observeAsState(
+        val maxMin: List<Pair<Triple<String, String, String>, Int>> by weeklyWeatherViewModel.maxMin.collectAsState(
             initial = initListMaxMin
         )
         Column(modifier = Modifier.fillMaxWidth().background(color = MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(6.dp)).padding(6.dp)) {
