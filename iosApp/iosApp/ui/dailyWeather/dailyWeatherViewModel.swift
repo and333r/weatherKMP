@@ -21,11 +21,13 @@ class dailyWeatherViewModel: ObservableObject{
     
     private var WeatherBL: weatherBL = weatherBL()
     
+    var db = DatabaseDriverFactoryKt.createDatabase(driverFactory: DatabaseDriverFactory())
+    var cambio = false
+    var hasRun = false
+    var changed = false
+    
     func getAllData() async {
         do{
-            let weekW = try await WeatherBL.getAllData(latitude: latitude, longitude: longitude)
-            let dayW = WeatherBL.getDailyWeather(weekWeather: weekW)
-            // Obtener la fecha actual
             let ahora = Date()
             // Crear un objeto de calendario
             let calendario = Calendar.current
@@ -34,18 +36,66 @@ class dailyWeatherViewModel: ObservableObject{
             
             let range = currentHour...23
             
-            var my_array = [String]()
-            var my_temperatures = [Double]()
-            var my_codes = [Int]()
-            for i in range {
-                my_array.append(String(i))
-                my_temperatures.append(Double(truncating: dayW.temperatures[i]))
-                my_codes.append(Int(truncating: dayW.codes[i]))
-            }
+            let ds_dw = dailyWeatherDataSource(db: db)
+            let repo_dw = dailyWeatherRepositorySQL(dataSource: ds_dw)
             
-            temperatures = my_temperatures
-            codes = my_codes
-            hours = my_array
+            try await repo_dw.getAlliOS().collect(collector: Collector<hourlyWeatherList>{ value in
+                Task{
+                    do{
+                        let weekW = try await self.WeatherBL.getAllData(latitude: self.latitude, longitude: self.longitude)
+                        let dayW = self.WeatherBL.getDailyWeather(weekWeather: weekW)
+                        self.cambio = false
+                        guard !self.hasRun else { return } // Asegura que solo se ejecute una vez
+                        if(self.changed){
+                            self.hasRun = true
+                        }
+                        print(value.dailyList)
+                        print(self.latitude)
+                        print(self.longitude)
+                        if(!value.isEqual(nil)){
+                            if(value.dailyList.last?.longitude == self.longitude && value.dailyList.last?.latitude == self.latitude){
+                                if(Int(value.dailyList.first!.date) != currentHour){
+                                    self.cambio = true
+                                }
+                                else{
+                                    var my_array = [String]()
+                                    var my_temperatures = [Double]()
+                                    var my_codes = [Int]()
+                                    for i in range {
+                                        my_array.append(String(i))
+                                        my_temperatures.append(round(value.dailyList[i - currentHour].temperature))
+                                        my_codes.append(Int(truncating: value.dailyList[i - currentHour].code as NSNumber))
+                                    }
+                                    self.temperatures = my_temperatures
+                                    self.codes = my_codes
+                                    self.hours = my_array
+                                }
+                                
+                            }else{
+                                self.cambio = true
+                            }
+                            
+                        }else{
+                            self.cambio = true
+                        }
+                        if(self.cambio){
+                            try await repo_dw.deleteAll()
+                            let list_aux1 = dayW.temperatures
+                            let list_aux2 = dayW.codes
+                            for i in range {
+                                try await repo_dw.insert(date: String(i), latitude: self.latitude, longitude: self.longitude, temperature: Double(truncating: list_aux1[i]), code: Int64(truncating: list_aux2[i]))
+                            }
+                            
+                        }
+                    }catch{
+                        print(error)
+                    }
+                }
+                
+                
+            })
+            
+            
 
             print(temperatures)
             print(hours)
@@ -58,6 +108,7 @@ class dailyWeatherViewModel: ObservableObject{
         }
     
     func setLatAndLong(Latitude: Double, Longitude: Double){
+        self.changed = true
            latitude = Latitude
            longitude = Longitude
        }

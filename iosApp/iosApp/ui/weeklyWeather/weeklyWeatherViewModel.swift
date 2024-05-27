@@ -24,11 +24,17 @@ class weeklyWeatherViewModel: ObservableObject{
     
     private var WeatherBL: weatherBL = weatherBL()
     
+    
+    var db = DatabaseDriverFactoryKt.createDatabase(driverFactory: DatabaseDriverFactory())
+    
     func getAllData() async {
         print(latitude)
         print(longitude)
         print("Estoy en getAllData en iOS")
         do{
+            
+            
+            
             let weekW = try await WeatherBL.getAllData(latitude: latitude, longitude: longitude)
             
             var lista: [((String?,String, String), Int)] = []

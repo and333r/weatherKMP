@@ -5,6 +5,8 @@ import model.domain.hourlyWeather
 import model.db.dailyWeather.DailyDataSource
 import model.db.dailyWeather.dailyWeatherRepository
 import model.db.dailyWeather.toDailyWeather
+import model.db.dailyWeather.toHourlyWeatherList
+import model.domain.hourlyWeatherList
 
 class dailyWeatherRepositorySQL(
     private val dataSource: DailyDataSource
@@ -13,6 +15,10 @@ class dailyWeatherRepositorySQL(
     override fun getAll() = flow<Result<List<hourlyWeather>>>{
         dataSource.getAll()
             .collect{i -> emit(Result.success(i.map { j -> j.toDailyWeather() }))}
+    }
+
+    fun getAlliOS()=flow<hourlyWeatherList>{
+        getAll().collect{i -> i.onSuccess { j -> emit(j.toHourlyWeatherList()) }}
     }
 
     override suspend fun insert(date: String, latitude: Double, longitude: Double, temperature: Double, code: Long) {

@@ -19,6 +19,7 @@
 		3C914F7D2BE8142500A7E165 /* weeklyCardConstructor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C914F7C2BE8142500A7E165 /* weeklyCardConstructor.swift */; };
 		3C914F7F2BE824DA00A7E165 /* actualWeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C914F7E2BE824DA00A7E165 /* actualWeatherViewModel.swift */; };
 		3C914F822BE8296700A7E165 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C914F812BE8296700A7E165 /* LocationManager.swift */; };
+		3CA01CE32C036E98007947C5 /* Collector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CA01CE22C036E98007947C5 /* Collector.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		3C914F7C2BE8142500A7E165 /* weeklyCardConstructor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weeklyCardConstructor.swift; sourceTree = "<group>"; };
 		3C914F7E2BE824DA00A7E165 /* actualWeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = actualWeatherViewModel.swift; sourceTree = "<group>"; };
 		3C914F812BE8296700A7E165 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		3CA01CE22C036E98007947C5 /* Collector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Collector.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* WeatherAppPoC-KMP.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WeatherAppPoC-KMP.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				3C0FB8C12BE7E6E4005C7A7B /* weeklyWeather */,
 				3C0FB8C02BE7E6DD005C7A7B /* dailyWeather */,
 				3C0FB8BF2BE7E6D3005C7A7B /* actualWeather */,
+				3CA01CE22C036E98007947C5 /* Collector.swift */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -255,6 +258,7 @@
 				3C914F7D2BE8142500A7E165 /* weeklyCardConstructor.swift in Sources */,
 				3C0FB8BE2BE7E69D005C7A7B /* actualWeather.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				3CA01CE32C036E98007947C5 /* Collector.swift in Sources */,
 				3C914F792BE8122700A7E165 /* cardConstructor.swift in Sources */,
 				3C914F7F2BE824DA00A7E165 /* actualWeatherViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
@@ -407,6 +411,7 @@
 					"$(inherited)",
 					"-framework",
 					shared,
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_ID}${TEAM_ID}";
 				PRODUCT_NAME = "${APP_NAME}";
@@ -436,6 +441,7 @@
 					"$(inherited)",
 					"-framework",
 					shared,
+					"-lsqlite3",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "${BUNDLE_ID}${TEAM_ID}";
 				PRODUCT_NAME = "${APP_NAME}";

@@ -11,6 +11,10 @@ class actualWeatherRepositorySQL(
             .collect{i -> emit(Result.success(i.map { j -> j.toActualWeather() }))}
     }
 
+    suspend fun getAlliOS() = flow<actualWeather?>{
+        getAll().collect{ i -> i.onSuccess { j -> emit(j.last())}}
+    }
+
     override suspend fun insert(hour: Long, latitude: Double, longitude: Double, temperature: Double, humidity: Long, code: Long, relativeT: Double, precipitation: Long) {
        dataSource.insert(
            hour = hour,

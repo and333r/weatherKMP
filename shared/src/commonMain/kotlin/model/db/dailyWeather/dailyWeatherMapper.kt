@@ -1,7 +1,9 @@
 package model.db.dailyWeather
 
 import com.db.DailyWeather
+import kotlinx.coroutines.joinAll
 import model.domain.hourlyWeather
+import model.domain.hourlyWeatherList
 
 fun DailyWeather.toDailyWeather(): hourlyWeather {
     return hourlyWeather(
@@ -10,5 +12,11 @@ fun DailyWeather.toDailyWeather(): hourlyWeather {
         longitude = longitude,
         temperature = temperature,
         code = code.toInt(),
+    )
+}
+
+fun List<hourlyWeather>.toHourlyWeatherList(): hourlyWeatherList{
+    return hourlyWeatherList(
+        dailyList = this
     )
 }
