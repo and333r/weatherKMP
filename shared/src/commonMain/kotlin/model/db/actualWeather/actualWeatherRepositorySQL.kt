@@ -12,7 +12,7 @@ class actualWeatherRepositorySQL(
     }
 
     suspend fun getAlliOS() = flow<actualWeather?>{
-        getAll().collect{ i -> i.onSuccess { j -> emit(j.last())}}
+        getAll().collect{ i -> i.onSuccess { j -> emit(j.lastOrNull())}}
     }
 
     override suspend fun insert(hour: Long, latitude: Double, longitude: Double, temperature: Double, humidity: Long, code: Long, relativeT: Double, precipitation: Long) {

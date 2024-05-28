@@ -16,7 +16,7 @@ struct weeklyWeather: View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(0..<WeeklyWeatherViewModel.maxMin.count) {i in
-                        weeklycardConstructor(code: WeeklyWeatherViewModel.maxMin[i].1, max: WeeklyWeatherViewModel.maxMin[i].0.1, min: WeeklyWeatherViewModel.maxMin[i].0.2, weekDay: WeeklyWeatherViewModel.maxMin[i].0.0!)
+                        weeklycardConstructor(code: WeeklyWeatherViewModel.maxMin[i].1!, max: WeeklyWeatherViewModel.maxMin[i].0.1!, min: WeeklyWeatherViewModel.maxMin[i].0.2!, weekDay: WeeklyWeatherViewModel.maxMin[i].0.0!)
                     }
                 }
             }

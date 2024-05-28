@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 class weatherBL {
 
     companion object{
-        @JvmStatic
+
         suspend fun getAllData(latitude: Double, longitude: Double): weekWeather {
             val URL = "https://api.open-meteo.com/v1/forecast?latitude=$latitude&longitude=$longitude&hourly=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,weather_code&timezone=Europe%2FBerlin"
             println("Retrieving data...")
@@ -21,7 +21,7 @@ class weatherBL {
             println("Data retrieved...")
             return data
         }
-        @JvmStatic
+
 
         fun getDailyWeather(weekWeather: weekWeather): dayWeather{
             println("Retrieving daily data...")
@@ -33,7 +33,7 @@ class weatherBL {
                 weekWeather.hourly.precipitation_probability.take(24)
             )
         }
-        @JvmStatic
+
 
         fun getActualTemperature(dayWeather: dayWeather, hour: Int): actualWeather{
             println("Retrieving actual data...")
@@ -47,7 +47,7 @@ class weatherBL {
                 dayWeather.precipitations[hour]
             )
         }
-        @JvmStatic
+
 
         fun getSpecificWeekDayTemperature(weekWeather: weekWeather, dayNumber: Int): dayWeather{
             println("Retrieving each days data...")
@@ -60,7 +60,7 @@ class weatherBL {
             )
         }
 
-        @JvmStatic
+
 
         fun getMaxAndMinT(dayWeather: dayWeather): Pair<String, String> {
             var max = -1
@@ -74,7 +74,6 @@ class weatherBL {
             }
             return Pair(max.toString(), min.toString())
         }
-        @JvmStatic
 
         fun getAverageCode(dayWeather: dayWeather): Int {
             val conteo = dayWeather.codes.groupingBy { it }.eachCount()
@@ -82,7 +81,7 @@ class weatherBL {
             print("Numero mas repetido: $numeroMasRepetido")
             return numeroMasRepetido?.toInt() ?: 0
         }
-        @JvmStatic
+
 
         fun returnEstado(code: Int): String {
             val indexSunny = listOf(0, 51, 53, 55, 56, 57)

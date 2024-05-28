@@ -10,7 +10,7 @@ import Shared
 import SwiftUI
 
 class weeklyWeatherViewModel: ObservableObject{
-    @Published var maxMin: [((String?, String, String), Int)] = [
+    @Published var maxMin: [((String?, String?, String?), Int?)] = [
         (("Sábado", "14", "9.3"), 0),
         (("Domingo", "14", "9.3"), 0),
         (("Lunes", "14", "9.3"), 0),
@@ -26,28 +26,87 @@ class weeklyWeatherViewModel: ObservableObject{
     
     
     var db = DatabaseDriverFactoryKt.createDatabase(driverFactory: DatabaseDriverFactory())
+    var cambio = false
+    var hasRun = false
+    var change = false
     
     func getAllData() async {
         print(latitude)
         print(longitude)
         print("Estoy en getAllData en iOS")
         do{
+            let ds_ww = weeklyWeatherDataSource(db: self.db)
+            let repo_ww = weeklyWeatherRepositorySQL(dataSource: ds_ww)
             
+            try await repo_ww.deleteAll()
             
-            
-            let weekW = try await WeatherBL.getAllData(latitude: latitude, longitude: longitude)
-            
-            var lista: [((String?,String, String), Int)] = []
+            try await repo_ww.getAlliOS().collect(collector: Collector<weeklyWeatherList?>{ value in
+                Task{
+                    do{
+                        guard !self.hasRun else { return } // Asegura que solo se ejecute una vez
+                        if(self.change){
+                            self.hasRun = true
+                        }
+                        let weekW = try await self.WeatherBL.getAllData(latitude: self.latitude, longitude: self.longitude)
+                        var lista: [((String?,String, String), Int)] = []
+                        for i in 1...7{
+                            let currentDay = self.WeatherBL.getSpecificWeekDayTemperature(weekWeather: weekW, dayNumber: Int32(i))
+                            let currentMaxMin = self.getMaxAndMinT(dayWeather: currentDay)
+                            let mostRepeatedCode = self.getAverageCode(dayWeather: currentDay)
+                            let weekDaySpanish = self.getDayOfWeek(afterDays: i-1)?.capitalized
+                            lista.append(((weekDaySpanish, currentMaxMin.0, currentMaxMin.1), mostRepeatedCode))
+                        }
+                        self.maxMin = lista
+                        if(!value!.wekklyList.isEmpty){
+                            if(value!.wekklyList.last?.latitude == self.latitude && value!.wekklyList.last?.longitude == self.longitude){
+                                
+                                if(value!.wekklyList.first?.date != lista.first?.0.0){
+                                    self.cambio = true
+                                }
+                                else{
+                                    print("weeklyWeather: VM -> BD -> VM")
+
+                                    var listar: [((String?,String?, String?), Int?)] = []
+                                    for i in 1...7{
+                                        listar.append(((value!.wekklyList[i-1].date,
+                                                        String(value!.wekklyList[i-1].temperatureMax),
+                                                        String(value!.wekklyList[i-1].temperatureMin)),
+                                                       Int(value!.wekklyList[i-1].code)))
+                                    }
+                                    self.maxMin = listar
+                                }
+                            }else{
+                                self.cambio = true
+                            }
+                        }else{
+                            self.cambio = true
+                        }
+                        if(self.cambio){
+                            print("weeklyWeather: VM -> BD -> API -> BD -> VM")
+                            try await repo_ww.deleteAll()
+                            for i in 1...7{
+                                try await repo_ww.insert(date: lista[i-1].0.0!, latitude: self.latitude, longitude: self.longitude, temperatureMax: Double(lista[i-1].0.1)!, temperatureMin: Double(lista[i-1].0.2)!, code: Int64(lista[i-1].1))
+                            }
+                            try await repo_ww.getAlliOS().collect(collector: Collector<weeklyWeatherList>{w in
+                                var listar: [((String?,String?, String?), Int?)] = []
+                                for i in 1...7{
+                                    listar.append(((w.wekklyList[i-1].date,
+                                                    String(w.wekklyList[i-1].temperatureMax),
+                                                    String(w.wekklyList[i-1].temperatureMin)),
+                                                   Int(w.wekklyList[i-1].code)))
+                                }
+                                self.maxMin = listar
+                            })
+                        }
+                        
+                       
+
+                    }catch{
+                        print(error)
+                    }
+                }
                 
-            for i in 1...7{
-                var currentDay = WeatherBL.getSpecificWeekDayTemperature(weekWeather: weekW, dayNumber: Int32(i))
-                var currentMaxMin = getMaxAndMinT(dayWeather: currentDay)
-                var mostRepeatedCode = getAverageCode(dayWeather: currentDay)
-                var weekDaySpanish = getDayOfWeek(afterDays: i-1)?.capitalized
-                lista.append(((weekDaySpanish, currentMaxMin.0, currentMaxMin.1), mostRepeatedCode))
-            }
-            print(lista)
-            maxMin = lista
+            })
             
         }
         catch {
@@ -57,6 +116,7 @@ class weeklyWeatherViewModel: ObservableObject{
         }
     
     func setLatAndLong(Latitude: Double, Longitude: Double){
+        self.change = true
            latitude = Latitude
            longitude = Longitude
        }

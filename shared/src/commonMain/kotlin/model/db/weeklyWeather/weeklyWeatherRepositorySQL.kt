@@ -8,7 +8,9 @@ import model.db.dailyWeather.dailyWeatherRepository
 import model.db.dailyWeather.toDailyWeather
 import model.db.weeklyWeather.WeekDataSource
 import model.db.weeklyWeather.toWeeklyWeather
+import model.db.weeklyWeather.toWeeklyWeatherList
 import model.db.weeklyWeather.weeklyWeatherRepository
+import model.domain.weeklyWeatherList
 
 class weeklyWeatherRepositorySQL(
     private val dataSource: WeekDataSource
@@ -17,6 +19,10 @@ class weeklyWeatherRepositorySQL(
     override fun getAll() = flow<Result<List<daySpecWeather>>>{
         dataSource.getAll()
             .collect{i -> emit(Result.success(i.map { j -> j.toWeeklyWeather() }))}
+    }
+
+    fun getAlliOS() = flow<weeklyWeatherList> {
+        getAll().collect{i -> i.onSuccess { j -> emit(j.toWeeklyWeatherList()) }}
     }
 
     override suspend fun insert(date: String, latitude: Double, longitude: Double, temperatureMax: Double, temperatureMin: Double, code: Long) {
