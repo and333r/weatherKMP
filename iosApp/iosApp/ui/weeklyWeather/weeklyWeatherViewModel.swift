@@ -38,7 +38,7 @@ class weeklyWeatherViewModel: ObservableObject{
             let ds_ww = weeklyWeatherDataSource(db: self.db)
             let repo_ww = weeklyWeatherRepositorySQL(dataSource: ds_ww)
             
-            try await repo_ww.deleteAll()
+           // try await repo_ww.deleteAll()
             
             try await repo_ww.getAlliOS().collect(collector: Collector<weeklyWeatherList?>{ value in
                 Task{

@@ -16,9 +16,15 @@ struct DailyWeather: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
-                ForEach(0...DailyWeatherViewModel.temperatures.count-1, id: \.self) {i in
-                    cardConstructor(code: DailyWeatherViewModel.codes[i], temperature: Int(DailyWeatherViewModel.temperatures[i]), hour: DailyWeatherViewModel.hours[i])
+                if(DailyWeatherViewModel.temperatures.count == DailyWeatherViewModel.codes.count &&
+                   DailyWeatherViewModel.temperatures.count == DailyWeatherViewModel.hours.count){
+                    ForEach(0...DailyWeatherViewModel.temperatures.count-1, id: \.self) {i in
+                        cardConstructor(code: DailyWeatherViewModel.codes[i], temperature: Int(DailyWeatherViewModel.temperatures[i]), hour: DailyWeatherViewModel.hours[i])
+                    }
+                }else{
+                    ProgressView("Cargando...")
                 }
+               
             }
         }.task{
             await DailyWeatherViewModel.getAllData()

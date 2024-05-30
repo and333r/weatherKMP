@@ -33,7 +33,7 @@ class actualWeatherViewModel: ObservableObject{
             let ds_aw = actualWeatherDataSource(db: db)
             let repo_aw = actualWeatherRepositorySQL(dataSource: ds_aw)
             
-            try await repo_aw.deleteAll()
+            //try await repo_aw.deleteAll()
             
             try await repo_aw.getAlliOS().collect(collector: Collector<actualWeather?>(){ value in
                         Task {
@@ -44,11 +44,8 @@ class actualWeatherViewModel: ObservableObject{
                                 let calendario = Calendar.current
                                 let currentHour = calendario.component(.hour, from: ahora)
                                 let weekW = try await self.WeatherBL.getAllData(latitude: self.latitude, longitude: self.longitude)
-                                
                                 let dayW = self.WeatherBL.getDailyWeather(weekWeather: weekW)
-                                
-                                let actualWeather = self.WeatherBL.getActualTemperature(dayWeather: dayW, hour: Int32(currentHour+1))
-                                
+                                let actualWeather = self.WeatherBL.getActualTemperature(dayWeather: dayW, hour: Int32(currentHour))
                                 if (value != nil) {
                                     if value!.latitude == self.latitude || value!.longitude == self.longitude {
                                         if currentHour != value!.hour {
@@ -56,6 +53,7 @@ class actualWeatherViewModel: ObservableObject{
                                         }else{
                                             print("actualWeather: VM -> BD -> VM")
                                             var aux = String(Int(round(value!.temperature)))
+                                            print(aux)
                                             self.actualT = aux + "º"
                                             self.actualC = String(value!.code)
                                             aux = String(value!.humidity)
@@ -76,12 +74,6 @@ class actualWeatherViewModel: ObservableObject{
                                     print("actualWeather: VM -> BD -> API -> BD -> VM")
                                     self.cambio = false
                                     try await repo_aw.deleteAll()
-                                    print(actualWeather.temperature)
-                                    print(actualWeather.humidity)
-                                    print(actualWeather.code)
-                                    print(actualWeather.latitude)
-                                    print(actualWeather.longitude)
-                                    print(actualWeather.relativeT)
                                     try await repo_aw.insert(hour: Int64(currentHour), latitude: self.latitude, longitude: self.longitude, temperature: actualWeather.temperature, humidity: Int64(actualWeather.humidity), code: Int64(actualWeather.code), relativeT: actualWeather.relativeT, precipitation: Int64(actualWeather.relativeT))
                                     try await repo_aw.getAlliOS().collect(collector: Collector<actualWeather?>{w in
                                         var aux = String(Int(round(w!.temperature)))

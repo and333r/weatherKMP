@@ -37,7 +37,7 @@ class dailyWeatherViewModel: ObservableObject{
             let ds_dw = dailyWeatherDataSource(db: db)
             let repo_dw = dailyWeatherRepositorySQL(dataSource: ds_dw)
             
-            try await repo_dw.deleteAll()
+            //try await repo_dw.deleteAll()
 
             try await repo_dw.getAlliOS().collect(collector: Collector<hourlyWeatherList?>{ value in
                 Task{
@@ -45,7 +45,7 @@ class dailyWeatherViewModel: ObservableObject{
                         let weekW = try await self.WeatherBL.getAllData(latitude: self.latitude, longitude: self.longitude)
                         let dayW = self.WeatherBL.getDailyWeather(weekWeather: weekW)
                         self.cambio = false
-                        guard !self.hasRun else { return } // Asegura que solo se ejecute una vez
+                        guard !self.hasRun else { return } // Asegura que solo se ejecute una vez (Esto es una solución temporal para evitar que se ejecute en varios hilos)
                         if(self.changed){
                             self.hasRun = true
                         }
@@ -64,9 +64,10 @@ class dailyWeatherViewModel: ObservableObject{
                                         my_temperatures.append(round(value!.dailyList[i - currentHour].temperature))
                                         my_codes.append(Int(truncating: value!.dailyList[i - currentHour].code as NSNumber))
                                     }
-                                    self.temperatures = my_temperatures
                                     self.codes = my_codes
                                     self.hours = my_array
+                                    self.temperatures = my_temperatures
+
                                 }
                                 
                             }else{
@@ -93,9 +94,9 @@ class dailyWeatherViewModel: ObservableObject{
                                     my_temperatures.append(round(w.dailyList[i - currentHour].temperature))
                                     my_codes.append(Int(truncating: w.dailyList[i - currentHour].code as NSNumber))
                                 }
-                                self.temperatures = my_temperatures
                                 self.codes = my_codes
                                 self.hours = my_array
+                                self.temperatures = my_temperatures
                             })
                             
                         }
